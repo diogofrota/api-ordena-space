@@ -2,13 +2,11 @@ FROM maven:3.9.9-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-COPY pom.xml mvnw ./
-COPY .mvn .mvn
-RUN chmod +x mvnw
+COPY pom.xml ./
 
 COPY src src
 
-RUN ./mvnw -DskipTests package dependency:copy-dependencies
+RUN mvn -DskipTests package dependency:copy-dependencies
 
 FROM eclipse-temurin:17-jre
 
