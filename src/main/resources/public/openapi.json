@@ -1,0 +1,51 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API ORDENA SPACE",
+    "version": "1.0.0",
+    "description": "API REST Java 17 com JDBC para simulacao de telemetria GPS por tablet satelital."
+  },
+  "paths": {
+    "/api/telemetria/tablets/{tabletSatelital}/ultima-posicao": {
+      "get": {
+        "summary": "Busca a ultima posicao GPS de um tablet satelital",
+        "parameters": [
+          {
+            "name": "tabletSatelital",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ultima posicao encontrada",
+            "content": {
+              "application/json": {
+                "example": {
+                  "tabletSatelital": "80001",
+                  "latitude": -23.561684,
+                  "longitude": -46.625378,
+                  "capturadoEm": "2026-06-07T18:40:00Z",
+                  "observacao": "simulada dentro da area"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tablet nao encontrado",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Tablet satelital nao encontrado."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

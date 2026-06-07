@@ -1,0 +1,7 @@
+# Arquivo de referencia. A aplicacao sem Spring usa variaveis de ambiente.
+# Exemplo para Oracle:
+# APP_PROFILE=oracle
+# ORACLE_DB_URL=jdbc:oracle:thin:@//localhost:1521/XEPDB1
+# ORACLE_DB_USERNAME=seu_usuario
+# ORACLE_DB_PASSWORD=sua_senha
+# PORT=8080
