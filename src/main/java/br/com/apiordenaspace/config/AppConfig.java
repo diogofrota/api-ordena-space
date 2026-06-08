@@ -31,6 +31,11 @@ public class AppConfig {
     public static AppConfig fromEnvironment() {
         Map<String, String> env = System.getenv();
         Map<String, String> localEnv = loadLocalEnv();
+        String h2Profile = firstNonBlank(
+                localEnv.get("APP_PROFILE"),
+                env.get("APP_PROFILE"),
+                env.get("SPRING_PROFILES_ACTIVE")
+        );
         String oracleDbUrl = firstNonBlank(
                 localEnv.get("ORACLE_DB_URL"),
                 env.get("ORACLE_DB_URL")
@@ -43,20 +48,27 @@ public class AppConfig {
         );
 
         boolean oracleProfile = "oracle".equalsIgnoreCase(profile) || oracleDbUrl != null;
+        boolean explicitH2Profile = "h2".equalsIgnoreCase(profile) || "h2".equalsIgnoreCase(h2Profile);
         String dbUrl = firstNonBlank(
                 System.getProperty("app.db.url"),
                 localEnv.get("APP_DB_URL"),
                 env.get("APP_DB_URL"),
                 oracleProfile ? oracleDbUrl : null,
-                DEFAULT_H2_URL
+                explicitH2Profile ? DEFAULT_H2_URL : null
         );
+        if (dbUrl == null) {
+            throw new IllegalStateException(
+                    "Nenhuma configuracao de banco encontrada. Defina ORACLE_DB_URL/ORACLE_DB_USERNAME/ORACLE_DB_PASSWORD " +
+                            "ou use APP_PROFILE=h2 para desenvolvimento local."
+            );
+        }
         String dbUsername = firstNonBlank(
                 System.getProperty("app.db.username"),
                 localEnv.get("APP_DB_USERNAME"),
                 env.get("APP_DB_USERNAME"),
                 oracleProfile ? localEnv.get("ORACLE_DB_USERNAME") : null,
                 oracleProfile ? env.get("ORACLE_DB_USERNAME") : null,
-                DEFAULT_H2_USERNAME
+                dbUrl.startsWith("jdbc:h2:") ? DEFAULT_H2_USERNAME : null
         );
         String dbPassword = firstNonBlank(
                 System.getProperty("app.db.password"),
@@ -64,7 +76,7 @@ public class AppConfig {
                 env.get("APP_DB_PASSWORD"),
                 oracleProfile ? localEnv.get("ORACLE_DB_PASSWORD") : null,
                 oracleProfile ? env.get("ORACLE_DB_PASSWORD") : null,
-                DEFAULT_H2_PASSWORD
+                dbUrl.startsWith("jdbc:h2:") ? DEFAULT_H2_PASSWORD : null
         );
         String portValue = firstNonBlank(
                 System.getProperty("app.port"),

@@ -69,8 +69,10 @@ Dockerfile
 ### Subir com banco H2 local
 
 ```bash
-./mvnw exec:java
+APP_PROFILE=h2 ./mvnw exec:java
 ```
+
+Sem `APP_PROFILE=h2`, a aplicacao nao faz mais fallback silencioso para H2.
 
 A API sobe em `http://localhost:8080`.
 
@@ -109,6 +111,7 @@ Observacao:
 - voce tambem pode usar um arquivo local `.env.local`, que ja esta ignorado no Git
 - no perfil `oracle`, a aplicacao nao executa `schema.sql` nem `data.sql`
 - voce deve criar a tabela e os inserts no Oracle antes de subir a API
+- sem Oracle configurado, a aplicacao agora falha no startup em vez de usar H2 automaticamente
 
 ### Usando `.env.local`
 
