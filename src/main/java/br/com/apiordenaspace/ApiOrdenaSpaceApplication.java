@@ -11,5 +11,6 @@ public class ApiOrdenaSpaceApplication {
         server.start();
         Runtime.getRuntime().addShutdownHook(new Thread(server::stop));
         System.out.println("API ORDENA SPACE rodando em http://localhost:" + server.getPort());
+        System.out.println("Banco ativo: " + (config.isOracleDatabase() ? "ORACLE" : "H2") + " | URL: " + config.getDbUrl());
     }
 }

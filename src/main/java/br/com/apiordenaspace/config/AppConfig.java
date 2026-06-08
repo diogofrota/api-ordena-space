@@ -31,6 +31,10 @@ public class AppConfig {
     public static AppConfig fromEnvironment() {
         Map<String, String> env = System.getenv();
         Map<String, String> localEnv = loadLocalEnv();
+        String oracleDbUrl = firstNonBlank(
+                localEnv.get("ORACLE_DB_URL"),
+                env.get("ORACLE_DB_URL")
+        );
         String profile = firstNonBlank(
                 System.getProperty("app.profile"),
                 localEnv.get("APP_PROFILE"),
@@ -38,13 +42,12 @@ public class AppConfig {
                 env.get("SPRING_PROFILES_ACTIVE")
         );
 
-        boolean oracleProfile = "oracle".equalsIgnoreCase(profile);
+        boolean oracleProfile = "oracle".equalsIgnoreCase(profile) || oracleDbUrl != null;
         String dbUrl = firstNonBlank(
                 System.getProperty("app.db.url"),
                 localEnv.get("APP_DB_URL"),
                 env.get("APP_DB_URL"),
-                oracleProfile ? localEnv.get("ORACLE_DB_URL") : null,
-                oracleProfile ? env.get("ORACLE_DB_URL") : null,
+                oracleProfile ? oracleDbUrl : null,
                 DEFAULT_H2_URL
         );
         String dbUsername = firstNonBlank(
@@ -74,6 +77,10 @@ public class AppConfig {
         int port = Integer.parseInt(portValue);
         boolean initializeDatabase = dbUrl.startsWith("jdbc:h2:");
         return new AppConfig(port, dbUrl, dbUsername, dbPassword, initializeDatabase);
+    }
+
+    public boolean isOracleDatabase() {
+        return dbUrl.startsWith("jdbc:oracle:");
     }
 
     public int getPort() {
